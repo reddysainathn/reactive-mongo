@@ -1,3 +1,4 @@
+/*
 package com.reactive.endpointsexample.reactivemongo.resource;
 
 import com.reactive.endpointsexample.reactivemongo.model.Employee;
@@ -56,3 +57,4 @@ public class EmployeeResource {
     }
 
 }
+*/
