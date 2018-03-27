@@ -35,15 +35,20 @@ public class EmployeeResource {
         Mono<Employee> employee = employeeRepository.findById(id);
         return employee;
     }
-
+    // Using Flux End-point(Flux Returns Multiple Stream of Events)
     @GetMapping(value = "/{id}/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<EmployeeEvent> getEvents(@PathVariable final String id) {
+        //FlatMapMany as it returns multiple Streams.
         return employeeRepository.findById(id).flatMapMany(
                 employee -> {
+                    //Create Flux-1 interval for the time of interval the Stream Should generate
                     Flux<Long> interval = Flux.interval(Duration.ofSeconds(3));
+                    //Create Flux-2 employeeEventFlux to get the Employee Events Stream.
                     Flux<EmployeeEvent> employeeEventFlux = Flux.fromStream(
                             Stream.generate(() -> new EmployeeEvent(employee, new Date()))
                     );
+                    //Combine Flux-1 and Flux-2 with zip option.
+                    // EmployeeEvent generates Tuple of Objects which we chose to getT2() as it is the EmployeeEvent.
                     return Flux.zip(interval, employeeEventFlux).
                             map(objects -> objects.getT2());
                 }
